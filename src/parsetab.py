@@ -5,7 +5,7 @@ _tabversion = '3.8'
 
 _lr_method = 'LALR'
 
-_lr_signature = '9195A5F7E05E627AC0F404F95AEB41BA'
+_lr_signature = '6A59E3FB99648FC098B262F10CFE7201'
     
 _lr_action_items = {'NAME':([0,2,5,7,11,12,13,14,],[1,8,8,8,8,8,8,8,]),')':([3,8,9,10,16,17,18,19,20,],[-9,-10,-7,16,-8,-4,-3,-5,-6,]),'(':([0,2,5,7,11,12,13,14,],[5,5,5,5,5,5,5,5,]),'+':([1,3,6,8,9,10,15,16,17,18,19,20,],[-10,-9,12,-10,-7,12,12,-8,-4,-3,-5,-6,]),'*':([1,3,6,8,9,10,15,16,17,18,19,20,],[-10,-9,13,-10,-7,13,13,-8,13,13,-5,-6,]),'-':([0,1,2,3,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,],[2,-10,2,-9,2,11,2,-10,-7,11,2,2,2,2,11,-8,-4,-3,-5,-6,]),'NUMBER':([0,2,5,7,11,12,13,14,],[3,3,3,3,3,3,3,3,]),'/':([1,3,6,8,9,10,15,16,17,18,19,20,],[-10,-9,14,-10,-7,14,14,-8,14,14,-5,-6,]),'=':([1,],[7,]),'$end':([1,3,4,6,8,9,15,16,17,18,19,20,],[-10,-9,0,-2,-10,-7,-1,-8,-4,-3,-5,-6,]),}
 
@@ -32,8 +32,8 @@ _lr_productions = [
   ('expression -> expression - expression','expression',3,'p_expression_binop','grammars.py',24),
   ('expression -> expression * expression','expression',3,'p_expression_binop','grammars.py',25),
   ('expression -> expression / expression','expression',3,'p_expression_binop','grammars.py',26),
-  ('expression -> - expression','expression',2,'p_expression_uminus','grammars.py',37),
-  ('expression -> ( expression )','expression',3,'p_expression_group','grammars.py',41),
-  ('expression -> NUMBER','expression',1,'p_expression_number','grammars.py',45),
-  ('expression -> NAME','expression',1,'p_expression_name','grammars.py',49),
+  ('expression -> - expression','expression',2,'p_expression_uminus','grammars.py',38),
+  ('expression -> ( expression )','expression',3,'p_expression_group','grammars.py',42),
+  ('expression -> NUMBER','expression',1,'p_expression_number','grammars.py',46),
+  ('expression -> NAME','expression',1,'p_expression_name','grammars.py',50),
 ]

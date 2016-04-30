@@ -7,7 +7,7 @@ from __init__ import *
 import ply.lex as lex
 import ply.yacc as yacc
 
-lex.lex()
+lexer = lex.lex()
 yacc.yacc()
 
 if __name__ == "__main__":
@@ -19,3 +19,7 @@ if __name__ == "__main__":
         if not s:
             continue
         yacc.parse(s)
+    # data = '''3 + 4 * 10+ -20 *2'''
+    # lexer.input(data)
+    # for tok in lexer:
+    #     print(tok)

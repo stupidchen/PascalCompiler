@@ -24,6 +24,7 @@ def p_expression_binop(p):
                   | expression '-' expression
                   | expression '*' expression
                   | expression '/' expression'''
+    print type(p[1])
     if p[2] == '+':
         p[0] = p[1] + p[3]
     elif p[2] == '-':
