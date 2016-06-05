@@ -1,2 +1,5 @@
 *.pyc
 *.out
+.DS_Store
+*.png
+*.jpg
