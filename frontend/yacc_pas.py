@@ -16,9 +16,19 @@ def p_Start(p):
     'program : program_head routine oDOT'
     p[0]=ProgramNode(p[1],p[2])
 
+def p_Start_error(p):
+    'program : program_head routine error'
+    process_syntax_error(p,4,'.')
+    p[0]=None
+
 def p_Program_head(p):
     'program_head : kPROGRAM yNAME oSEMI'
     p[0]=p[2]
+
+def p_Program_head_error(p):
+    'program_head : kPROGRAM yNAME error'
+    process_syntax_error(p,4,';')
+    p[0]=None
 
 def p_Routine(p):
     'routine : routine_head routine_body'
@@ -44,11 +54,31 @@ def p_Const_expr_list_1(p):
     e=ConstExprNode(VariableNode(p[2]),p[4])
     p[0]=p[1]
     p[0].append(e)
+    
+def p_Const_expr_list_1_error_1(p):
+    'const_expr_list : const_expr_list yNAME error const_value oSEMI'
+    process_syntax_error(p,4,'=')
+    p[0]=None
+
+def p_Const_expr_list_1_error_2(p):
+    'const_expr_list : const_expr_list yNAME oEQUAL const_value error'
+    process_syntax_error(p,6,';')
+    p[0]=None
 
 def p_Const_expr_list_2(p):
     'const_expr_list : yNAME oEQUAL const_value oSEMI'
     e=ConstExprNode(p[1],p[3])
     p[0]=ConstExprListNode(e)
+
+def p_Const_expr_list_2_error_1(p):
+    'const_expr_list : yNAME error const_value oSEMI'
+    process_syntax_error(p,3,'=')
+    p[0]=None
+
+def p_Const_expr_list_2_error_2(p):
+    'const_expr_list : yNAME oEQUAL const_value error'
+    process_syntax_error(p,5,';')
+    p[0]=None
 
 
 # const_value : INTEGER    |    REAL    |    CHAR    |    STRING    |    SYS_CON
@@ -96,6 +126,16 @@ def p_Type_definition(p):
     'type_definition : yNAME oEQUAL type_decl oSEMI'
     p[0]=TypeDefinitionNode(p[1],p[3])
 
+def Type_definition_error_1(p):
+    'type_definition : yNAME error type_decl oSEMI'
+    process_syntax_error(p,3,'=')
+    p[0]=None
+
+def Type_definition_error_2(p):
+    'type_definition : yNAME oEQUAL type_decl error'
+    process_syntax_error(p,5,';')
+    p[0]=None
+
 # type_decl : simple_type_decl    |    array_type_decl    |    record_type_decl
 def p_Type_decl(p):
     '''type_decl : simple_type_decl
@@ -117,9 +157,24 @@ def p_Simple_type_decl_2(p):
     'simple_type_decl : oLP name_list oRP'
     p[0]=EnumTypeNode('enum',p[2])
 
+def p_Simple_type_decl_2_error_1(p):
+    'simple_type_decl : error name_list oRP'
+    process_syntax_error(p,2,'[')
+    p[0]=None
+
+def p_Simple_type_decl_2_error_2(p):
+    'simple_type_decl : oLP name_list error'
+    process_syntax_error(p,4,']')
+    p[0]=None
+
 def p_Simple_type_decl_3(p):
     'simple_type_decl : const_value oDOTDOT const_value'
     p[0]=RangeTypeNode('range',(p[1],p[3]))
+    
+def p_Simple_type_decl_3_error(p):
+    'simple_type_decl : const_value error const_value'
+    process_syntax_error(p,3,'..')
+    p[0]=None
 
 def p_Simple_type_decl_4(p):
     'simple_type_decl : yNAME'
@@ -130,6 +185,15 @@ def p_Array_type_decl(p):
     'array_type_decl : kARRAY    oLB    simple_type_decl    oRB    kOF    type_decl'
     p[0]=ArrayTypeNode(p[3],p[6])
 
+def p_Array_type_decl_error_1(p):
+    'array_type_decl : kARRAY    error    simple_type_decl    oRB    kOF    type_decl'
+    process_syntax_error(p,3,'[')
+    p[0]=None
+
+def p_Array_type_decl_error_2(p):
+    'array_type_decl : kARRAY    oLB    simple_type_decl    error    kOF    type_decl'
+    process_syntax_error(p,5,']')
+    p[0]=None
 
 # record_type_decl : RECORD    field_decl_list    END
 def p_Record_type_decl(p):
@@ -151,11 +215,26 @@ def p_Field_decl(p):
     'field_decl : name_list    oCOLON    type_decl    oSEMI'
     pass
 
+def p_field_decl_error_1(p):
+    'field_decl : name_list    error    type_decl    oSEMI'
+    process_syntax_error(p,3,':')
+    p[0]=None
+
+def p_field_decl_error_2(p):
+    'field_decl : name_list    oCOLON    type_decl    error'
+    process_syntax_error(p,5,';')
+    p[0]=None
+
 # name_list : name_list    COMMA    ID    |    ID
 def p_Name_list_1(p):
     'name_list : name_list    oCOMMA    yNAME'
     p[0]=p[1]
     p[0].append(p[3])
+
+def p_Name_list_error(p):
+    'name_list : name_list    error    yNAME'
+    process_syntax_error(p,3,',')
+    p[0]=None
 
 def p_Name_list_2(p):
     'name_list : yNAME'
@@ -185,6 +264,15 @@ def p_Var_decl(p):
     'var_decl :    name_list    oCOLON    type_decl    oSEMI'
     p[0]=VarDeclNode(p[1],p[3])
 
+def p_Var_decl_error_1(p):
+    'var_decl :    name_list    error    type_decl    oSEMI'
+    process_syntax_error(p,3,':')
+    p[0]=None
+
+def p_Var_decl_error_2(p):
+    'var_decl :    name_list    oCOLON    type_decl    error'
+    process_syntax_error(p,5,';')
+    p[0]=None
 
 # routine_part :    routine_part    function_decl    |    routine_part    procedure_decl
 #                        | function_decl    |    procedure_decl    | empty
@@ -216,15 +304,40 @@ def p_Function_decl(p):
     'function_decl : function_head    oSEMI    sub_routine oSEMI'
     p[0]=FunctionDeclNode(p[1],p[3])
 
+def p_Function_decl_error_1(p):
+    'function_decl : function_head    error    sub_routine oSEMI'
+    process_syntax_error(p,3,';')
+    p[0]=None
+
+def p_Function_decl_error_2(p):
+    'function_decl : function_head    oSEMI    sub_routine error'
+    process_syntax_error(p,4,';')
+    p[0]=None
+
 # function_head :    FUNCTION    ID    parameters    COLON    simple_type_decl
 def p_Function_head(p):
     'function_head :    kFUNCTION    yNAME    parameters    oCOLON    simple_type_decl '
     p[0]=FunctionPrototypeNode(p[2],p[3],p[5])
 
+def p_Function_head_error_1(p):
+    'function_head :    kFUNCTION    yNAME    parameters    error    simple_type_decl '
+    process_syntax_error(p,5,',')
+    p[0]=None
+
 # procedure_decl :    procedure_head    SEMI    sub_routine    SEMI
 def p_Prodecure_decl(p):
     'procedure_decl :    procedure_head    oSEMI    sub_routine    oSEMI'
     p[0]=ProcedureDeclNode(p[1],p[3]);
+
+def p_Procedure_decl_error_1(p):
+    'procedure_decl : procedure_head    error    sub_routine oSEMI'
+    process_syntax_error(p,3,';')
+    p[0]=None
+
+def p_Procedure_decl_error_2(p):
+    'procedure_decl : procedure_head    oSEMI    sub_routine error'
+    process_syntax_error(p,4,';')
+    p[0]=None
 
 # sub_routine : routine
 def p_Sub_routine(p):
@@ -245,11 +358,26 @@ def p_Parameters(p):
     else:
         p[0]=p[2]
 
+def p_Parameters_error_1(p):
+    'parameters : error    para_decl_list    oRP'
+    process_syntax_error(p,2,'[')
+    p[0]=None
+
+def p_Parameters_error_2(p):
+    'parameters : oLP    para_decl_list   error' 
+    process_syntax_error(p,4,']')
+    p[0]=None
+
 # para_decl_list : para_decl_list    SEMI    para_type_list    |    para_type_list
 def p_Para_decl_list_1(p):
     'para_decl_list : para_decl_list    oSEMI    para_type_list'
     p[0]=p[1]
     p[0].append(p[3])
+
+def p_Para_decl_list_1_error(p):
+    'para_decl_list : para_decl_list    error    para_type_list'
+    process_syntax_error(p,3,';')
+    p[0]=None
 
 def p_Para_decl_list_2(p):
     'para_decl_list : para_type_list'
@@ -259,6 +387,11 @@ def p_Para_decl_list_2(p):
 def p_Para_type_list_2(p):
     'para_type_list : var_para_list    oCOLON    simple_type_decl'
     p[0]=ParaTypeListNode(p[1],p[3])
+
+def p_Para_type_list_2_error(p):
+    'para_type_list : var_para_list    error    simple_type_decl'
+    process_syntax_error(p,3,':')
+    p[0]=None
 
 # var_para_list : VAR    name_list
 def p_Var_para_list_1(p):
@@ -300,6 +433,11 @@ def p_Stmt(p):
     else:
         p[0]=p[1]
 
+def p_Stmt_error(p):
+    'stmt : cINTEGER    error    non_label_stmt'
+    process_syntax_error(p,3,':')
+    p[0]=None
+
 def p_Non_label_stmt(p):
     '''non_label_stmt : assign_stmt
                                         | proc_stmt
@@ -322,6 +460,11 @@ def p_Assign_stmt_1(p):
     var=VariableNode(p[1])
     p[0]=create_stmt_node(':=',var,p[3])
 
+def p_Assign_stmt_1_error(p):
+    'assign_stmt : yNAME    oASSIGN    expression'
+    process_syntax_error(p,3,':=')
+    p[0]=None
+
 def find_column(pos):
     print parser.text
 
@@ -337,15 +480,45 @@ def p_Assign_stmt_1_error(p):
     process_syntax_error(p,2,':=')
     p[0]=None
 
+def p_Assign_stmt_1_error_2(p):
+    'assign_stmt : yNAME    oASSIGN	error'
+    process_syntax_error(p,3,'expression')
+    p[0]=None
+
 def p_Assign_stmt_2(p):
     'assign_stmt : yNAME oLB expression oRB oASSIGN expression'
     var=ArrayMemberNode(p[1],[p[3]])
     p[0]=create_stmt_node(':=',var,p[6])
 
+def p_Assign_stmt_2_error_1(p):
+    'assign_stmt : yName error expression oRB oASSIGN expression '
+    process_syntax_error(p,2,'[');
+    p[0]=None
+
+def p_Assign_stmt_2_error_2(p):
+    'assign_stmt : yName oLB expression error oASSIGN expression '
+    process_syntax_error(p,4,']');
+    p[0]=None
+
+def p_Assign_stmt_2_error_2(p):
+    'assign_stmt : yName oLB expression oRB error expression '
+    process_syntax_error(p,5,':=');
+    p[0]=None
+
 def p_Assign_stmt_3(p):
     'assign_stmt : yNAME    oDOT yNAME oASSIGN    expression'
     var=RecordMemberNode(p[1],p[3])
     p[0]=create_stmt_node(':=',var,p[5])
+
+def p_Assign_stmt_3_error_1(p):
+    'assign_stmt : yNAME    error yNAME oASSIGN    expression'
+    process_syntax_error(p,2,'.');
+    p[0]=None
+
+def p_Assign_stmt_3_error_2(p):
+    'assign_stmt : yNAME    oDOT yNAME error    expression'
+    process_syntax_error(p,4,':=');
+    p[0]=None
 
 # proc_stmt : ID
 #                     |    ID    LP    args_list    RP
@@ -362,6 +535,16 @@ def p_Proc_stmt_2(p):
     'proc_stmt : yNAME oLP args_list oRP'
     p[0]=create_stmt_node('fn',p[1],p[3])
 
+def p_Proc_stmt_2_error_1(p):
+    'proc_stmt : yNAME error args_list oRP'
+    process_syntax_error(p,2,'[');
+    p[0]=None
+
+def p_Proc_stmt_2_error_2(p):
+    'proc_stmt : yNAME oLP args_list error'
+    process_syntax_error(p,5,']');
+    p[0]=None
+
 #to implement system functions
 def p_Proc_stmt_3(p):
     'proc_stmt : SYS_PROC'
@@ -371,9 +554,29 @@ def p_Proc_stmt_4(p):
     'proc_stmt : SYS_PROC oLP expression_list oRP'
     p[0]=create_stmt_node('fn',p[1],p[3])
 
+def p_Proc_stmt_4_error_1(p):
+    'proc_stmt : SYS_PROC error expression_list oRP'
+    process_syntax_error(p,2,'[');
+    p[0]=None
+
+def p_Proc_stmt_4_error_2(p):
+    'proc_stmt : SYS_PROC oLP expression_list error'
+    process_syntax_error(p,5,']');
+    p[0]=None
+
 def p_Proc_stmt_5(p):
     'proc_stmt : kREAD oLP factor oRP'
     p[0]=create_stmt_node('fn',p[1],p[3])
+
+def p_Proc_stmt_5_error_1(p):
+    'proc_stmt : kREAD error factor oRP'
+    process_syntax_error(p,3,'[');
+    p[0]=None
+
+def p_Proc_stmt_5_error_2(p):
+    'proc_stmt : kREAD oLP factor error'
+    process_syntax_error(p,5,']');
+    p[0]=None
 
 # def p_Proc_stmt_6(p):
 #     'proc_stmt : kREADLN oLP factor oRP'
